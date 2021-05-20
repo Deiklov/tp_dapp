@@ -46,7 +46,7 @@ class App extends Component {
             if (result)
                 this.setState({ipfsHashInput: result})
         });
-        const data = await ipfs.get(this.state.ipfsHashInput || this.state.ipfsHash);
+        const data = await ipfs.get(this.state.ipfsHashInput);
         console.log(data[0].content);
         this.setState({
             imgSrc:

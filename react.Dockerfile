@@ -1,8 +1,9 @@
-FROM node:14-alpine
+FROM node:16-alpine
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
-COPY package.json yarn.lock ./
+COPY package.json ./
 RUN yarn install
+ENV PATH="./node_modules/.bin:$PATH"
 COPY . ./
 EXPOSE 3000
-CMD yarn start
+CMD npm run start
