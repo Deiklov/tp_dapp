@@ -7,7 +7,7 @@ Simple project for dapp
 3. Запуск ipfs daemon --writable
 4. cd tp_dapp && yarn install && yarn start
 5. cd tp_dapp/brownie && brownie console && ctrct=HashStorage.deploy({'from':accounts[2]})
-6. запомнить хеш задеплоенного аккаунта и вписать в .env.development
+6. запомнить хеш задеплоенного контракта и вписать в .env.development
 7. Ставим Metamask, заходим на localhost:3000
 ## Инструкция по работе  
 1. жмем выберите файл
