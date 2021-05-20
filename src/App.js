@@ -39,13 +39,13 @@ class App extends Component {
         e.preventDefault();
         const accounts = await web3.eth.getAccounts();
 
-        storehash.methods.getFileIPFSHash().call({
+        const result = await storehash.methods.getFileIPFSHash().call({
             from: accounts[0]
-        }).then((result) => {
-            console.log("got from contract:", result);
-            if (result)
-                this.setState({ipfsHashInput: result})
         });
+        console.log("got from contract:", result);
+        await this.setState({ipfsHashInput: result});
+
+        console.log(this.state.ipfsHashInput);
         const data = await ipfs.get(this.state.ipfsHashInput);
         console.log(data[0].content);
         this.setState({
@@ -54,26 +54,6 @@ class App extends Component {
         });
     };
 
-    onClick = async () => {
-
-        try {
-            this.setState({blockNumber: "waiting.."});
-            this.setState({gasUsed: "waiting..."});
-
-            // get Transaction Receipt in console on click
-            // See: https://web3js.readthedocs.io/en/1.0/web3-eth.html#gettransactionreceipt
-            await web3.eth.getTransactionReceipt(this.state.transactionHash, (err, txReceipt) => {
-                console.log(err, txReceipt);
-                this.setState({txReceipt});
-            }); //await for getTransactionReceipt
-
-            await this.setState({blockNumber: this.state.txReceipt.blockNumber});
-            await this.setState({gasUsed: this.state.txReceipt.gasUsed});
-        } //try
-        catch (error) {
-            console.log(error);
-        } //catch
-    }; //onClick
 
     onSubmit = async (event) => {
         event.preventDefault();
@@ -83,20 +63,15 @@ class App extends Component {
 
         console.log('Sending from Metamask account: ' + accounts[0]);
 
-        //obtain contract address from storehash.js
         const ethAddress = await storehash.options.address;
         this.setState({ethAddress});
 
-        //save document to IPFS,return its hash#, and set hash# to state
-        //https://github.com/ipfs/interface-ipfs-core/blob/master/SPEC/FILES.md#add
+        //save document to IPFS
         await ipfs.add(this.state.buffer, (err, ipfsHash) => {
             console.log(err, ipfsHash);
             //setState by setting ipfsHash to ipfsHash[0].hash
             this.setState({ipfsHash: ipfsHash[0].hash});
 
-            // call Ethereum contract method "sendHash" and .send IPFS hash to etheruem contract
-            //return the transaction hash from the ethereum contract
-            //see, this https://web3js.readthedocs.io/en/1.0/web3-eth-contract.html#methods-mymethod-send
             console.log("accs", accounts);
             storehash.methods.setFileIPFSHash(this.state.ipfsHash).send({
                 from: accounts[0],
@@ -104,15 +79,15 @@ class App extends Component {
             }, (error, transactionHash) => {
                 console.log(transactionHash);
                 this.setState({transactionHash});
-            }); //storehash
-        }) //await ipfs.add
-    }; //onSubmit
+            });
+        })
+    };
 
     render() {
 
         return (
             <div className="App">
-                <h1> Ethereum and InterPlanetary File System(IPFS) with Create React App</h1>
+                <h1> Ethereum and IPFS with Create React App</h1>
 
                 <hr/>
 
@@ -120,12 +95,11 @@ class App extends Component {
                 <Form onSubmit={this.onSubmit}>
                     <input type="file" onChange={this.captureFile}/>
                     <Button bsStyle="primary" type="submit">
-                        Send it
+                        Сохранить в блокчейн
                     </Button>
                 </Form>
 
                 <hr/>
-                <Button onClick={this.onClick}> Get Transaction Receipt </Button>
 
                 <Table bordered responsive>
                     <thead>
@@ -163,10 +137,8 @@ class App extends Component {
                 </Table>
                 <h3> Insert IPFS hash to load file </h3>
                 <Form onSubmit={this.onSubmitHashForm}>
-                    <input type="text" name="ipfsHash"
-                           onChange={(e) => this.setState({ipfsHashInput: e.target.value})}/>
                     <Button bsStyle="primary" type="submit">
-                        Get file by hash
+                        Получить картинку
                     </Button>
                 </Form>
                 {this.state.imgSrc && <img src={this.state.imgSrc} alt="picture from ipfs"/>}
