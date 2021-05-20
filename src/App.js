@@ -37,6 +37,15 @@ class App extends Component {
     };
     onSubmitHashForm = async (e) => {
         e.preventDefault();
+        const accounts = await web3.eth.getAccounts();
+
+        storehash.methods.getFileIPFSHash().call({
+            from: accounts[0]
+        }).then((result) => {
+            console.log("got from contract:", result);
+            if (result)
+                this.setState({ipfsHashInput: result})
+        });
         const data = await ipfs.get(this.state.ipfsHashInput || this.state.ipfsHash);
         console.log(data[0].content);
         this.setState({
@@ -89,8 +98,9 @@ class App extends Component {
             //return the transaction hash from the ethereum contract
             //see, this https://web3js.readthedocs.io/en/1.0/web3-eth-contract.html#methods-mymethod-send
             console.log("accs", accounts);
-            storehash.methods.setFile(this.state.ipfsHash).send({
-                from: accounts[0]
+            storehash.methods.setFileIPFSHash(this.state.ipfsHash).send({
+                from: accounts[0],
+                gasPrice: '0'
             }, (error, transactionHash) => {
                 console.log(transactionHash);
                 this.setState({transactionHash});

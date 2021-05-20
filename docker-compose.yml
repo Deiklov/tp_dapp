@@ -1,0 +1,19 @@
+version: "3.6"
+services:
+  react:
+    build:
+      context: ./
+      dockerfile: react.Dockerfile
+    ports:
+      - "3000:3000"
+  brownie:
+    build:
+      context: ./
+      dockerfile: brownie.Dockerfile
+    ports:
+      - "8545:8545"
+  ipfs:
+    image: ipfs/go-ipfs:latest
+    ports:
+      - "5001:5001"
+    command: ipfs daemon --writable

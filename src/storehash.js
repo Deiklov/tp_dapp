@@ -5,14 +5,27 @@ const address = process.env.REACT_APP_ETH_CONTRACT_ADDRESS;
 
 const abi = [
     {
-        "inputs": [
+        "inputs": [],
+        "name": "getFileIPFSHash",
+        "outputs": [
             {
                 "internalType": "string",
-                "name": "file",
+                "name": "",
                 "type": "string"
             }
         ],
-        "name": "setFile",
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "fileHash",
+                "type": "string"
+            }
+        ],
+        "name": "setFileIPFSHash",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
